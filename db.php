@@ -38,8 +38,8 @@ $shap=isset($_GET['shap'])?$_GET['shap']:'正三角形';
  <form action="db.php">
     大小：<input type="number" name="size" value="<?=$size;?>"> &nbsp;&nbsp;
     形狀：<select name="shap">
-        <option value="正三角形" <?($shap=='正三角形')?'selected':'';?>正三角形</option>
-        <option value="菱形"<?($shap=='菱形')?'selected':'';?>菱形</option>
+        <option value="正三角形" <?($shap=='正三角形')?'selected':'';?>>正三角形</option>
+        <option value="菱形"<?($shap=='菱形')?'selected':'';?>>菱形</option>
         </select>
         <input type="submit" value="繪製">
  </form>
@@ -63,23 +63,40 @@ starts($size,$shap);
         <input type="submit" value="列出">
  </form>
 
-<?php
+ <?php
 $rows=all($table);
-echo"<ul>";
-foreach($rows as $row){
+ echo"<ul>";
+ foreach($rows as $row){
     echo "<li>";
-    echo $row['school_num'] ;
+    echo $row['code'] ;
     echo " -- ";
     echo $row['name'];
     echo "</li>";
  }
  echo "</ul>";
+
  ?>
 
  <div class="quiz">
  find()-會回傳資料表指定id的資料
  </div>
 
+ <?php
+$id=isset($_GET['id'])?$_GET['id']:'1';
+$table=isset($_GET['table'])?$_GET['table']:'students';
+?>
+
+ <form action="db.php">
+     資料表:<input type="text" name="table" value="<?=$table;?>">&nbsp;&nbsp;
+     id:<input type="text" name="id" value="<?=$id;?>">&nbsp;&nbsp;
+     
+    <input type="submit" value="列出">
+ </form>
+
+<?php
+    $row=find($table,$id);
+    show($row);
+?>
 
  <div class="quiz">
  update()-給定資料表的條件後，會去更新相應的資料。
@@ -163,8 +180,23 @@ function all($table){
 
 
 //find()-會回傳資料表指定id的資料
-function find(){
+function find($table,$id){
+    $dsn="mysql:host=localhost;charset=utf8;dbname=school2";
+    $pdo=new PDO($dsn,'root','');
+    $sql="SELECT * FROM `$table` WHERE `id`='$id'";
+    return $pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
+}
 
+function show($row){
+    
+    if(is_array($row)){
+        foreach($row as $key => $value){
+            echo $value;
+            echo "--";
+        }
+    }else{
+        echo "這不是一筆標準的資料，請重新輸入";
+    }
 }
 
 
